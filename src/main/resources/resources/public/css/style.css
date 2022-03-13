@@ -1,0 +1,22 @@
+ *{
+    margin: 0;
+    font-family: 'Roboto', "Helvetica Neue", sans-serif;
+    background-color:rgb(210, 238, 229);
+
+ }
+ .spacer {
+  flex: 1;
+}
+label{
+color: red !important;
+}
+h1 {
+    font-size: 50px;
+    color: red !important;
+    font-weight: bold;
+}
+h5,p {
+color: red !important;
+}
+
+

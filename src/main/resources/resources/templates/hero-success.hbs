@@ -1,0 +1,20 @@
+{{#partial "title" }}
+    {{name}}
+{{/partial}}
+
+
+{{#partial "content"}}
+<br> <br>
+    <h3>New Hero {{name}} added</h3>
+    <h5>HERO ATTRIBUTES</h5>
+    <p>Name: {{name}}</p>
+    <p>Age: {{age}}</p>
+    <p>Hero ability: {{heroAbility}}</p>
+    <p>Weakness: {{heroWeakness}}</p>
+    <p>Squad: {{squadName}}</p>
+
+    <a href="/heroes/list"><button class="btn btn-primary">View All</button></a>
+
+{{/partial}}
+
+{{> layout.hbs}}

@@ -1,0 +1,42 @@
+{{#partial "content"}}
+<div class="row">
+<div class="col-md-6">
+    <h1>Add a new Hero:</h1>
+    <form action="/heroes/new" method="POST">
+        <div class="form-group">
+            <label for="name">Name of Hero</label>
+            <input id="name" name="name" type="text" class="form-control" style="margin-bottom: 40px;" placeholder="Enter hero Name ...">
+        </div>
+
+        <div class="form-group">
+            <label for="age">Age</label>
+            <input id="age" name="age" type="text" class="form-control" style="margin-bottom: 40px;" placeholder="Enter hero age ...">
+        </div>
+
+        <div class="form-group">
+            <label for="heroAbility">Ability</label>
+            <input id="heroAbility" name="heroAbility" type="text" class="form-control" style="margin-bottom: 40px;" placeholder="Enter ability of the hero...">
+        </div>
+
+        <div class="form-group">
+            <label for="heroWeakness">Weakness</label>
+            <input id="heroWeakness" name="heroWeakness" type="text" class="form-control" style="margin-bottom: 40px;" placeholder="Enter Weakness of the hero...">
+        </div>
+
+        <div class="form-group">
+            <label for="selected-squad">Squad</label>
+            <select name="selected-squad" id="selected-squad" class="form-control">
+                {{#each squads}}
+                    <option value="{{id}}">{{name}}</option>
+                {{/each}}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Hero</button>
+    </form>
+ </div>
+</div>
+
+{{/partial}}
+
+{{> layout.hbs}}

@@ -46,4 +46,4 @@ OUTPUT: "Squads"
 MIT License
 
 ### Copyright 
-GLEN MBOROKI
+GLEN MBOROKI# HEROSQUAD

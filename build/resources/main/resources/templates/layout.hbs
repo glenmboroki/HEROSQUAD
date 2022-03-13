@@ -1,0 +1,51 @@
+{{#block "footer"}}
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>{{#block "title"}}Squad hero{{/block}}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+        <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+        <link rel='stylesheet' href="/css/style.css">
+    </head>
+    <body>
+{{/block}}
+
+<div class="header-container-fluid">
+    <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="/">Home</a></li>
+        <li role="presentation"><a href="/squads/list">All Squads</a></li>
+        <li role="presentation"><a href="/squads">New Squad</a></li>
+        <li role="presentation"><a href="/heroes">New Hero</a></li>
+    </ul>
+</div>
+<div class="container-fluid">
+    <!--begin main template-->
+    <div class="page-header">
+    <div>
+
+
+    <div class="row">
+        <div class="col-md-4">
+        <img height="300" width="420" src="images/avengers.gif">
+        </div>
+        <div class="col-md-4">
+        <img height="300" width="420" src="images/mavel.gif">
+        </div>
+         <div class="col-md-4">
+         <img  height="300" width="420" src="images/spiderman.gif">
+         </div>
+    </div>
+
+    </div>
+
+    <div class="col-md-12" id="content">
+        {{#block "content"}}
+        {{/block}}
+
+    </div>
+</div>
+<!--end main template-->
+{{#block "footer"}}
+    </body>
+    </html>
+{{/block}}

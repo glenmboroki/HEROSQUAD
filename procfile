@@ -1,2 +1,1 @@
-web: java -Dserver.port=$PORT $JAVA_OPTS -jar target/hero-squad23-1.0-jar-with-dependencies.jar
-web: ./build/install/hero-squad23/bin/hero-squad23
+web: gunicorn app:app

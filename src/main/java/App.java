@@ -10,13 +10,17 @@ import java.util.Map;
 import static spark.Spark.*;
 
 public class App {
-    static int getHerokuAssignedPort() {
+   public static <string> int main (string[] args) {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        if (processBuilder.environment().get("PORT") != null) {
-            return Integer.parseInt(processBuilder.environment().get("PORT"));
+       int port;
+       if (processBuilder.environment().get("PORT") != null) {
+           return Integer.parseInt(processBuilder.environment().get("PORT"));
+       }else {
+            port = 4567;
         }
-        return 4567;
-    }
+        port(port);
+       return port;
+   }
     public static void main(String[] args) {
         port(getHerokuAssignedPort());
         staticFileLocation("/public");
@@ -110,5 +114,9 @@ public class App {
         return null ;
         }, new HandlebarsTemplateEngine());
 
+    }
+
+    private static int getHerokuAssignedPort() {
+        return 0;
     }
 }

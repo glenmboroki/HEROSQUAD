@@ -10,21 +10,16 @@ import java.util.Map;
 import static spark.Spark.*;
 
 public class App {
-    public static void main(String[] args) {
-        ProcessBuilder process = new ProcessBuilder();
-        int port;
-
-        // This tells our app that if Heroku sets a port for us, we need to use that port.
-        // Otherwise, if they do not, continue using port 4567.
-
-        if (process.environment().get("PORT") != null) {
-            port = Integer.parseInt(process.environment().get("PORT"));
-        } else {
-            port = 4567;
+    static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
         }
-
-        port(port);
-
+        return 4567;
+    }
+    public static void main(String[] args) {
+        port(getHerokuAssignedPort());
+        staticFileLocation("/public");
 
         get("/", (request, response) -> {
             Map<String, Object> model = new HashMap<>();
@@ -60,6 +55,7 @@ public class App {
             Map<String, Object> model = new HashMap<>();
             String squad = request.queryParams("squad");
             String squadCause = request.queryParams("squadCause");
+            new Squad(squad, squadCause);
             model.put("squad",squad);
             model.put("cause", squadCause);
             return new ModelAndView(model, "success.hbs");

@@ -10,17 +10,13 @@ import java.util.Map;
 import static spark.Spark.*;
 
 public class App {
-   public static <string> int main (string[] args) {
+    static int getHerokuAssignedPort() {
         ProcessBuilder processBuilder = new ProcessBuilder();
-       int port;
-       if (processBuilder.environment().get("PORT") != null) {
-           return Integer.parseInt(processBuilder.environment().get("PORT"));
-       }else {
-            port = 4567;
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
         }
-        port(port);
-       return port;
-   }
+        return 4567;
+    }
     public static void main(String[] args) {
         port(getHerokuAssignedPort());
         staticFileLocation("/public");
@@ -59,7 +55,6 @@ public class App {
             Map<String, Object> model = new HashMap<>();
             String squad = request.queryParams("squad");
             String squadCause = request.queryParams("squadCause");
-            new Squad(squad, squadCause);
             model.put("squad",squad);
             model.put("cause", squadCause);
             return new ModelAndView(model, "success.hbs");
@@ -102,7 +97,14 @@ public class App {
             Squad selectedSquad = Squad.findById(selectedSquadId);
             String squadName = selectedSquad.getName();
             new Hero(name, age, heroAbility, heroWeakness, squadName);
-
+//            model.put("name", name);
+//            model.put("age", age);
+//            model.put("heroAbility", heroAbility);
+//            model.put("heroWeakness", heroWeakness);
+//            model.put("allSquads", allSquads);
+//            model.put("squadName", squadName);
+//            model.put("newHero", newHero);
+//
             System.out.println(name);
             System.out.println(age);
             System.out.println(heroAbility);
@@ -111,12 +113,8 @@ public class App {
             System.out.println(name);
 
             response.redirect("/" );
-        return null ;
+            return null ;
         }, new HandlebarsTemplateEngine());
 
-    }
-
-    private static int getHerokuAssignedPort() {
-        return 0;
     }
 }

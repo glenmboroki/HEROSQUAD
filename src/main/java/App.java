@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static spark.Spark.*;
 
-public class App {
+public class App<Sql2o> {
     static int getHerokuAssignedPort() {
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (processBuilder.environment().get("PORT") != null) {
@@ -17,9 +17,14 @@ public class App {
         }
         return 4567;
     }
+
+    //String connectionString = "jdbc:postgresql://ec2-34-230-110-100.compute-1.amazonaws.com:5432/damc10c69i49hq"; //!
+    //Sql2o sql2o = new Sql2o(connectionString, "ybfymeaptjosmq", "fd95b40d72d77f62fdd69798183155c729ab86294c5bb2853aefffcc58e011d6"); //!
+
     public static void main(String[] args) {
         port(getHerokuAssignedPort());
         staticFileLocation("/public");
+
 
         get("/", (request, response) -> {
             Map<String, Object> model = new HashMap<>();
@@ -61,7 +66,6 @@ public class App {
             return new ModelAndView(model, "success.hbs");
         }, new HandlebarsTemplateEngine());
 
-        // Heroes form
         get("/heroes", (request, response) -> {
             Map<String, Object> model = new HashMap<>();
             ArrayList<Hero> foundHero = Hero.getAll();
@@ -70,7 +74,7 @@ public class App {
             model.put("squads", allSquads);
             return new ModelAndView(model, "hero.hbs");
         }, new HandlebarsTemplateEngine());
-        // All Heroes
+
         get("/heroes/list", (request, response) -> {
             Map<String, Object> model = new HashMap<>();
             ArrayList<Hero> heroes = Hero.getAll();
@@ -78,7 +82,6 @@ public class App {
             return new ModelAndView(model, "allheroes.hbs");
         }, new HandlebarsTemplateEngine());
 
-        // hero Id update
         get("/heroes/:id/update", (request, response) -> {
             Map<String, Object> model = new HashMap<>();
             int idOfHeroToEdit = Integer.parseInt(request.params("id"));
@@ -87,25 +90,15 @@ public class App {
             return new ModelAndView(model, "heroform.hbs");
         }, new HandlebarsTemplateEngine());
 
-        // New Heroes form
         post("/heroes/new", (request, response) -> {
             String name = request.queryParams("name");
             int age = Integer.parseInt(request.queryParams("age"));
             String heroAbility = request.queryParams("heroAbility");
             String heroWeakness = request.queryParams("heroWeakness");
             int selectedSquadId = Integer.parseInt(request.queryParams("selected-squad"));
-//            ArrayList<Squad> allSquads = Squad.getAll();
             Squad selectedSquad = Squad.findById(selectedSquadId);
             String squadName = selectedSquad.getName();
             new Hero(name, age, heroAbility, heroWeakness, squadName);
-//            model.put("name", name);
-//            model.put("age", age);
-//            model.put("heroAbility", heroAbility);
-//            model.put("heroWeakness", heroWeakness);
-//            model.put("allSquads", allSquads);
-//            model.put("squadName", squadName);
-//            model.put("newHero", newHero);
-//
             System.out.println(name);
             System.out.println(age);
             System.out.println(heroAbility);

@@ -1,23 +1,27 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'org.example'
 version '1.0-SNAPSHOT'
+mainClassName = 'App'
+
+sourceCompatibility = 1.8
+applicationName = 'hero-squady'
 
 repositories {
     mavenCentral()
 }
 
 dependencies{
+
     implementation 'junit:junit:4.13.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     implementation "com.sparkjava:spark-core:2.6.0"
     implementation "com.sparkjava:spark-template-handlebars:2.5.5"
-    implementation 'org.slf4j:slf4j-simple:1.7.21' //logging tool for better error message
-
-}
+    implementation 'org.slf4j:slf4j-simple:1.7.21'
 
 
 test {

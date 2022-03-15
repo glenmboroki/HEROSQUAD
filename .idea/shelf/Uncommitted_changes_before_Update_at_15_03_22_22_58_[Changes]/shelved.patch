@@ -1,0 +1,251 @@
+Index: src/main/java/App.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import models.Hero;\nimport models.Squad;\nimport spark.ModelAndView;\nimport spark.template.handlebars.HandlebarsTemplateEngine;\n\nimport java.util.ArrayList;\nimport java.util.HashMap;\nimport java.util.Map;\n\nimport static spark.Spark.*;\n\npublic class App {\n    static int getHerokuAssignedPort() {\n        ProcessBuilder processBuilder = new ProcessBuilder();\n        if (processBuilder.environment().get(\"PORT\") != null) {\n            return Integer.parseInt(processBuilder.environment().get(\"PORT\"));\n        }\n        return 4567;\n    }\n    public static void main(String[] args) {\n        port(getHerokuAssignedPort());\n        staticFileLocation(\"/public\");\n\n        get(\"/\", (request, response) -> {\n            Map<String, Object> model = new HashMap<>();\n            return new ModelAndView(model, \"index.hbs\");\n        }, new HandlebarsTemplateEngine());\n\n        get(\"/squads\", (request, response) -> {\n            Map<String, Object> model = new HashMap<>();\n            ArrayList<Squad> foundSquad = Squad.getAll();\n            model.put(\"squads\",foundSquad);\n            return new ModelAndView(model, \"squads.hbs\");\n        }, new HandlebarsTemplateEngine());\n\n        get(\"/squads/list\", (request, response) -> {\n            Map<String, Object> model = new HashMap<>();\n            ArrayList<Squad> squads = Squad.getAll();\n            model.put(\"squads\", squads);\n            return new ModelAndView(model, \"allsquads.hbs\");\n        }, new HandlebarsTemplateEngine());\n\n        get(\"/squads/:id\", (request, response) -> {\n            Map<String, Object> model = new HashMap<>();\n            int idOfListToFind = Integer.parseInt(request.params(\"id\"));\n            Squad foundSquad = Squad.findById(idOfListToFind);\n            Hero foundHero = Hero.findById(idOfListToFind);\n            model.put(\"squad\",foundSquad);\n            model.put(\"hero\", foundHero);\n            return new ModelAndView(model, \"stats.hbs\");\n        }, new HandlebarsTemplateEngine());\n\n        // new Squads\n        post(\"/squads/new\", (request, response) -> {\n            Map<String, Object> model = new HashMap<>();\n            String squad = request.queryParams(\"squad\");\n            String squadCause = request.queryParams(\"squadCause\");\n            new Squad(squad, squadCause);\n            model.put(\"squad\",squad);\n            model.put(\"cause\", squadCause);\n            return new ModelAndView(model, \"success.hbs\");\n        }, new HandlebarsTemplateEngine());\n\n        // Heroes form\n        get(\"/heroes\", (request, response) -> {\n            Map<String, Object> model = new HashMap<>();\n            ArrayList<Hero> foundHero = Hero.getAll();\n            ArrayList<Squad> allSquads = Squad.getAll();\n            model.put(\"heroes\",foundHero);\n            model.put(\"squads\", allSquads);\n            return new ModelAndView(model, \"hero.hbs\");\n        }, new HandlebarsTemplateEngine());\n        // All Heroes\n        get(\"/heroes/list\", (request, response) -> {\n            Map<String, Object> model = new HashMap<>();\n            ArrayList<Hero> heroes = Hero.getAll();\n            model.put(\"heroes\", heroes);\n            return new ModelAndView(model, \"allheroes.hbs\");\n        }, new HandlebarsTemplateEngine());\n\n        // hero Id update\n        get(\"/heroes/:id/update\", (request, response) -> {\n            Map<String, Object> model = new HashMap<>();\n            int idOfHeroToEdit = Integer.parseInt(request.params(\"id\"));\n            Hero editHero = Hero.findById(idOfHeroToEdit);\n            model.put(\"editHero\", editHero);\n            return new ModelAndView(model, \"heroform.hbs\");\n        }, new HandlebarsTemplateEngine());\n\n        // New Heroes form\n        post(\"/heroes/new\", (request, response) -> {\n            String name = request.queryParams(\"name\");\n            int age = Integer.parseInt(request.queryParams(\"age\"));\n            String heroAbility = request.queryParams(\"heroAbility\");\n            String heroWeakness = request.queryParams(\"heroWeakness\");\n            int selectedSquadId = Integer.parseInt(request.queryParams(\"selected-squad\"));\n//            ArrayList<Squad> allSquads = Squad.getAll();\n            Squad selectedSquad = Squad.findById(selectedSquadId);\n            String squadName = selectedSquad.getName();\n            new Hero(name, age, heroAbility, heroWeakness, squadName);\n//            model.put(\"name\", name);\n//            model.put(\"age\", age);\n//            model.put(\"heroAbility\", heroAbility);\n//            model.put(\"heroWeakness\", heroWeakness);\n//            model.put(\"allSquads\", allSquads);\n//            model.put(\"squadName\", squadName);\n//            model.put(\"newHero\", newHero);\n//\n            System.out.println(name);\n            System.out.println(age);\n            System.out.println(heroAbility);\n            System.out.println(selectedSquad);\n            System.out.println(heroWeakness);\n            System.out.println(name);\n\n            response.redirect(\"/\" );\n            return null ;\n        }, new HandlebarsTemplateEngine());\n\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/App.java b/src/main/java/App.java
+--- a/src/main/java/App.java	(revision 6a0fd03d1d8e6d5e289275d15d61e3d99b69c15e)
++++ b/src/main/java/App.java	(date 1647346407259)
+@@ -9,7 +9,7 @@
+ 
+ import static spark.Spark.*;
+ 
+-public class App {
++public class App<Sql2o> {
+     static int getHerokuAssignedPort() {
+         ProcessBuilder processBuilder = new ProcessBuilder();
+         if (processBuilder.environment().get("PORT") != null) {
+@@ -17,10 +17,15 @@
+         }
+         return 4567;
+     }
++
++    //String connectionString = "jdbc:postgresql://ec2-34-230-110-100.compute-1.amazonaws.com:5432/damc10c69i49hq"; //!
++    //Sql2o sql2o = new Sql2o(connectionString, "ybfymeaptjosmq", "fd95b40d72d77f62fdd69798183155c729ab86294c5bb2853aefffcc58e011d6"); //!
++
+     public static void main(String[] args) {
+         port(getHerokuAssignedPort());
+         staticFileLocation("/public");
+ 
++
+         get("/", (request, response) -> {
+             Map<String, Object> model = new HashMap<>();
+             return new ModelAndView(model, "index.hbs");
+@@ -61,7 +66,6 @@
+             return new ModelAndView(model, "success.hbs");
+         }, new HandlebarsTemplateEngine());
+ 
+-        // Heroes form
+         get("/heroes", (request, response) -> {
+             Map<String, Object> model = new HashMap<>();
+             ArrayList<Hero> foundHero = Hero.getAll();
+@@ -70,7 +74,7 @@
+             model.put("squads", allSquads);
+             return new ModelAndView(model, "hero.hbs");
+         }, new HandlebarsTemplateEngine());
+-        // All Heroes
++
+         get("/heroes/list", (request, response) -> {
+             Map<String, Object> model = new HashMap<>();
+             ArrayList<Hero> heroes = Hero.getAll();
+@@ -78,7 +82,6 @@
+             return new ModelAndView(model, "allheroes.hbs");
+         }, new HandlebarsTemplateEngine());
+ 
+-        // hero Id update
+         get("/heroes/:id/update", (request, response) -> {
+             Map<String, Object> model = new HashMap<>();
+             int idOfHeroToEdit = Integer.parseInt(request.params("id"));
+@@ -87,25 +90,15 @@
+             return new ModelAndView(model, "heroform.hbs");
+         }, new HandlebarsTemplateEngine());
+ 
+-        // New Heroes form
+         post("/heroes/new", (request, response) -> {
+             String name = request.queryParams("name");
+             int age = Integer.parseInt(request.queryParams("age"));
+             String heroAbility = request.queryParams("heroAbility");
+             String heroWeakness = request.queryParams("heroWeakness");
+             int selectedSquadId = Integer.parseInt(request.queryParams("selected-squad"));
+-//            ArrayList<Squad> allSquads = Squad.getAll();
+             Squad selectedSquad = Squad.findById(selectedSquadId);
+             String squadName = selectedSquad.getName();
+             new Hero(name, age, heroAbility, heroWeakness, squadName);
+-//            model.put("name", name);
+-//            model.put("age", age);
+-//            model.put("heroAbility", heroAbility);
+-//            model.put("heroWeakness", heroWeakness);
+-//            model.put("allSquads", allSquads);
+-//            model.put("squadName", squadName);
+-//            model.put("newHero", newHero);
+-//
+             System.out.println(name);
+             System.out.println(age);
+             System.out.println(heroAbility);
+Index: pom.xml
+===================================================================
+diff --git a/pom.xml b/pom.xml
+deleted file mode 100644
+--- a/pom.xml	(revision 6a0fd03d1d8e6d5e289275d15d61e3d99b69c15e)
++++ /dev/null	(revision 6a0fd03d1d8e6d5e289275d15d61e3d99b69c15e)
+@@ -1,95 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project xmlns="http://maven.apache.org/POM/4.0.0"
+-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-    <!--change artifact id to your local project name-->
+-    <!--change version to your project version .. check build.gradle for this info -->
+-    <groupId>com.mycompany.app</groupId>
+-    <artifactId>HEROSUAD</artifactId>
+-    <version>1.0-SNAPSHOT</version>
+-
+-    <dependencies>
+-        <!-- We need to list out ALL dependencies our project needs. If you have dependencies not listed here, but sure to add them -->
+-        <!--        List any dependency you need for your project , get dependency info for maven by simply doing a google search -->
+-
+-
+-        <!-- Thanks for using https://jar-download.com -->
+-        <dependency>
+-            <groupId>eu.codearte.catch-exception</groupId>
+-            <artifactId>catch-exception</artifactId>
+-            <version>2.0</version>
+-            <scope>test</scope>
+-        </dependency>
+-
+-        <!--       testing libs for junit-->
+-        <dependency>
+-            <groupId>org.junit.jupiter</groupId>
+-            <artifactId>junit-jupiter-api</artifactId>
+-            <version>5.8.2</version>
+-            <scope>test</scope>
+-        </dependency>
+-        <dependency>
+-            <groupId>junit</groupId>
+-            <artifactId>junit</artifactId>
+-            <version>4.8.2</version>
+-        </dependency>
+-        <!-- Thanks for using https://jar-download.com -->
+-
+-    </dependencies>
+-    <build>
+-        <plugins>
+-            <plugin>
+-                <groupId>org.apache.maven.plugins</groupId>
+-                <artifactId>maven-compiler-plugin</artifactId>
+-                <version>3.8.0</version>
+-                <configuration>
+-                    <source>1.8</source>
+-                    <target>1.8</target>
+-                </configuration>
+-            </plugin>
+-            <plugin>
+-                <artifactId>maven-assembly-plugin</artifactId>
+-                <executions>
+-                    <execution>
+-                        <phase>package</phase>
+-                        <goals>
+-                            <goal>single</goal>
+-                        </goals>
+-                    </execution>
+-                </executions>
+-                <configuration>
+-                    <descriptorRefs>
+-                        <descriptorRef>jar-with-dependencies</descriptorRef>
+-                    </descriptorRefs>
+-                    <archive>
+-                        <!-- Change this to YOUR main class name if different. Usually, it will be App. -->
+-                        <manifest>
+-                            <mainClass>App</mainClass>
+-                        </manifest>
+-                    </archive>
+-                </configuration>
+-            </plugin>
+-            <plugin>
+-                <groupId>com.heroku.sdk</groupId>
+-                <artifactId>heroku-maven-plugin</artifactId>
+-                <version>2.0.16</version>
+-                <configuration>
+-                    <jdkVersion>1.8</jdkVersion>
+-                    <!-- Change this to YOUR application name on heroku! -->
+-                    <appName>hero-squady</appName>
+-                    <processTypes>
+-                        <!--                     BookShop-1.0-SNAPSHOT  : replace this with your local project name and its version  -->
+-                        <web>java -jar target/HEROSQUAD-1.0-SNAPSHOT-jar-with-dependencies.jar</web>
+-                    </processTypes>
+-                </configuration>
+-            </plugin>
+-        </plugins>
+-    </build>
+-    <properties>
+-        <maven.compiler.source>1.8</maven.compiler.source>
+-        <maven.compiler.target>1.8</maven.compiler.target>
+-    </properties>
+-
+-
+-</project>
+\ No newline at end of file
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"CompilerConfiguration\">\n    <annotationProcessing>\n      <profile name=\"Maven default annotation processors profile\" enabled=\"true\">\n        <sourceOutputDir name=\"target/generated-sources/annotations\" />\n        <sourceTestOutputDir name=\"target/generated-test-sources/test-annotations\" />\n        <outputRelativeToContentRoot value=\"true\" />\n        <module name=\"HEROSQUAD\" />\n      </profile>\n    </annotationProcessing>\n    <bytecodeTargetLevel target=\"17\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+--- a/.idea/compiler.xml	(revision 6a0fd03d1d8e6d5e289275d15d61e3d99b69c15e)
++++ b/.idea/compiler.xml	(date 1647374272019)
+@@ -1,14 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="CompilerConfiguration">
+-    <annotationProcessing>
+-      <profile name="Maven default annotation processors profile" enabled="true">
+-        <sourceOutputDir name="target/generated-sources/annotations" />
+-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+-        <outputRelativeToContentRoot value="true" />
+-        <module name="HEROSQUAD" />
+-      </profile>
+-    </annotationProcessing>
+     <bytecodeTargetLevel target="17" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"b95e12d7-05cb-4b2c-a460-c3f95e572323\" name=\"Changes\" comment=\"add file\">\n      <change beforePath=\"$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/.gitignore\" beforeDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"CodeInsightWorkspaceSettings\">\n    <option name=\"optimizeImportsOnTheFly\" value=\"true\" />\n  </component>\n  <component name=\"ExternalProjectsData\">\n    <projectState path=\"$PROJECT_DIR$\">\n      <ProjectState />\n    </projectState>\n  </component>\n  <component name=\"ExternalProjectsManager\">\n    <system id=\"GRADLE\">\n      <state>\n        <projects_view>\n          <tree_state>\n            <expand>\n              <path>\n                <item name=\"\" type=\"6a2764b6:ExternalProjectsStructure$RootNode\" />\n                <item name=\"HEROSQUAD\" type=\"f1a62948:ProjectNode\" />\n              </path>\n            </expand>\n            <select />\n          </tree_state>\n        </projects_view>\n      </state>\n    </system>\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Class\" />\n        <option value=\"JUnit5 Test Class\" />\n        <option value=\"AnnotationType\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitSEFilterConfiguration\">\n    <file-type-list>\n      <filtered-out-file-type name=\"LOCAL_BRANCH\" />\n      <filtered-out-file-type name=\"REMOTE_BRANCH\" />\n      <filtered-out-file-type name=\"TAG\" />\n      <filtered-out-file-type name=\"COMMIT_BY_MESSAGE\" />\n    </file-type-list>\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"MavenImportPreferences\">\n    <option name=\"generalSettings\">\n      <MavenGeneralSettings>\n        <option name=\"useMavenConfig\" value=\"true\" />\n      </MavenGeneralSettings>\n    </option>\n  </component>\n  <component name=\"ProblemsViewState\">\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\n  </component>\n  <component name=\"ProjectId\" id=\"26IVa1cuvmdy6t6ATorAeznWdPA\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">\n    <property name=\"ASKED_ADD_EXTERNAL_FILES\" value=\"true\" />\n    <property name=\"ASKED_SHARE_PROJECT_CONFIGURATION_FILES\" value=\"true\" />\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\n    <property name=\"SHARE_PROJECT_CONFIGURATION_FILES\" value=\"true\" />\n    <property name=\"com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary\" value=\"JUnit5\" />\n    <property name=\"com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5\" value=\"\" />\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$\" />\n    <property name=\"project.structure.last.edited\" value=\"Modules\" />\n    <property name=\"project.structure.proportion\" value=\"0.0\" />\n    <property name=\"project.structure.side.proportion\" value=\"0.0\" />\n    <property name=\"run.code.analysis.last.selected.profile\" value=\"pProject Default\" />\n    <property name=\"settings.editor.selected.configurable\" value=\"advanced.settings\" />\n  </component>\n  <component name=\"RecentsManager\">\n    <key name=\"CreateClassDialog.RecentsKey\">\n      <recent name=\"models\" />\n      <recent name=\"\" />\n    </key>\n    <key name=\"CreateTestDialog.Recents.Supers\">\n      <recent name=\"\" />\n    </key>\n    <key name=\"CreateTestDialog.RecentsKey\">\n      <recent name=\"models\" />\n    </key>\n  </component>\n  <component name=\"RunManager\">\n    <configuration name=\"App\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"App\" />\n      <module name=\"HEROSQUAD.main\" />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Application.App\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"b95e12d7-05cb-4b2c-a460-c3f95e572323\" name=\"Changes\" comment=\"\" />\n      <created>1647111150934</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1647111150934</updated>\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"test commit\">\n      <created>1647158888964</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1647158888964</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"file commit\">\n      <created>1647158907226</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1647158907226</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"README commit\">\n      <created>1647159306500</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1647159306500</updated>\n    </task>\n    <task id=\"LOCAL-00004\" summary=\"procfile\">\n      <created>1647161366933</created>\n      <option name=\"number\" value=\"00004\" />\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1647161366933</updated>\n    </task>\n    <task id=\"LOCAL-00005\" summary=\"xml file\">\n      <created>1647163052460</created>\n      <option name=\"number\" value=\"00005\" />\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1647163052460</updated>\n    </task>\n    <task id=\"LOCAL-00006\" summary=\"add file\">\n      <created>1647324727311</created>\n      <option name=\"number\" value=\"00006\" />\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1647324727311</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"7\" />\n    <servers />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <option name=\"ADD_EXTERNAL_FILES_SILENTLY\" value=\"true\" />\n    <MESSAGE value=\"test commit\" />\n    <MESSAGE value=\"file commit\" />\n    <MESSAGE value=\"README commit\" />\n    <MESSAGE value=\"procfile\" />\n    <MESSAGE value=\"xml file\" />\n    <MESSAGE value=\"add file\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"add file\" />\n  </component>\n  <component name=\"XSLT-Support.FileAssociations.UIState\">\n    <expand />\n    <select />\n  </component>\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\n    <SUITE FILE_PATH=\"coverage/HEROSQUAD$App.ic\" NAME=\"App Coverage Results\" MODIFIED=\"1647329342665\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 6a0fd03d1d8e6d5e289275d15d61e3d99b69c15e)
++++ b/.idea/workspace.xml	(date 1647374276746)
+@@ -5,9 +5,10 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="b95e12d7-05cb-4b2c-a460-c3f95e572323" name="Changes" comment="add file">
+-      <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/App.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -31,6 +32,11 @@
+               <path>
+                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                 <item name="HEROSQUAD" type="f1a62948:ProjectNode" />
++              </path>
++              <path>
++                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
++                <item name="HEROSQUAD" type="f1a62948:ProjectNode" />
++                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+               </path>
+             </expand>
+             <select />

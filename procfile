@@ -1,2 +1,2 @@
-web: java -Dserver.port=$PORT $JAVA_OPTS -jar target/hero-squady-1.0-jar-with-dependencies.jar
-web: ./build/install/hero-squady/bin/hero-squady
+web: java -Dserver.port=$PORT $JAVA_OPTS -jar target/hero-squad-glen-1.0-jar-with-dependencies.jar
+web: ./build/install/hero-squad-glen/bin/hero-squad-glen

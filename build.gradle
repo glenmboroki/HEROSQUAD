@@ -8,14 +8,14 @@ version '1.0-SNAPSHOT'
 mainClassName = 'App'
 
 sourceCompatibility = 1.8
-applicationName = 'hero-squady'
+applicationName = 'hero-squad-glen'
 
 repositories {
     mavenCentral()
 }
 
-dependencies{
-
+dependencies
+        {
     implementation 'junit:junit:4.13.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
